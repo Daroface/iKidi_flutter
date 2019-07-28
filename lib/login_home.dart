@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:i_kidi/Constats.dart';
+import 'package:i_kidi/Session.dart';
 
 class LoginForm extends StatefulWidget {
   @override
@@ -79,14 +80,22 @@ class _LoginFormState extends State<LoginForm> {
                                       fontStyle: FontStyle.italic,
                                       textBaseline: TextBaseline.alphabetic)),
                               onPressed: () {
-                                FocusScope.of(context)
-                                    .requestFocus(new FocusNode());
-                                if (_loginButton.currentState.validate()) {
-                                  Scaffold.of(context).showSnackBar(SnackBar(
-                                      content:
-                                          Text(Constants.LOGGING_STATEMENT)));
-                                }
+                                connect(context);
                               }))
                     ]))));
+  }
+  void connect(BuildContext context) {
+    Session session = new Session();
+    session.headers[Constants.LOGIN_PARAMETER] = _loginController.text;
+    session.headers[Constants.PASSWORD_PARAMETER] = _passwordController.text;
+    FocusScope.of(context)
+        .requestFocus(new FocusNode());
+    if (_loginButton.currentState.validate()) {
+      var body = {Constants.LOGIN_PARAMETER: _loginController.text, Constants.PASSWORD_PARAMETER: _passwordController.text};
+      session.post(Constants.HOST_URL + Constants.LOGIN_URL, body);
+      Scaffold.of(context).showSnackBar(SnackBar(
+          content:
+          Text(Constants.LOGGING_STATEMENT)));
+    }
   }
 }
