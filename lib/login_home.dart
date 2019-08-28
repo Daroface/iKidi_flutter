@@ -80,22 +80,31 @@ class _LoginFormState extends State<LoginForm> {
                                       fontStyle: FontStyle.italic,
                                       textBaseline: TextBaseline.alphabetic)),
                               onPressed: () {
-                                connect(context);
+                               connect(context);
                               }))
                     ]))));
   }
-  void connect(BuildContext context) {
+  void connect(BuildContext context) async {
     Session session = new Session();
     session.headers[Constants.LOGIN_PARAMETER] = _loginController.text;
     session.headers[Constants.PASSWORD_PARAMETER] = _passwordController.text;
     FocusScope.of(context)
         .requestFocus(new FocusNode());
     if (_loginButton.currentState.validate()) {
-      var body = {Constants.LOGIN_PARAMETER: _loginController.text, Constants.PASSWORD_PARAMETER: _passwordController.text};
-      session.post(Constants.HOST_URL + Constants.LOGIN_URL, body);
       Scaffold.of(context).showSnackBar(SnackBar(
           content:
           Text(Constants.LOGGING_STATEMENT)));
+      var body = {Constants.LOGIN_PARAMETER: _loginController.text, Constants.PASSWORD_PARAMETER: _passwordController.text};
+      var resp = await session.login(Constants.HOST_URL + Constants.LOGIN_URL, body);
+      if(resp == 200) {
+        Scaffold.of(context).showSnackBar(SnackBar(
+            content:
+            Text("Zalogowany!")));
+      } else {
+        Scaffold.of(context).showSnackBar(SnackBar(
+            content:
+            Text('Blad logowania!')));
+      }
     }
   }
 }
