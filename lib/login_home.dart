@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:i_kidi/Constats.dart';
 import 'package:i_kidi/Session.dart';
+import 'package:i_kidi/home.dart';
 
 class LoginForm extends StatefulWidget {
   @override
@@ -80,30 +81,39 @@ class _LoginFormState extends State<LoginForm> {
                                       fontStyle: FontStyle.italic,
                                       textBaseline: TextBaseline.alphabetic)),
                               onPressed: () {
-                               connect(context);
+                                connect(context);
                               }))
                     ]))));
   }
+
   void connect(BuildContext context) async {
     Session session = new Session();
     session.headers[Constants.LOGIN_PARAMETER] = _loginController.text;
     session.headers[Constants.PASSWORD_PARAMETER] = _passwordController.text;
-    FocusScope.of(context)
-        .requestFocus(new FocusNode());
+    FocusScope.of(context).requestFocus(new FocusNode());
     if (_loginButton.currentState.validate()) {
-      Scaffold.of(context).showSnackBar(SnackBar(
-          content:
-          Text(Constants.LOGGING_STATEMENT)));
-      var body = {Constants.LOGIN_PARAMETER: _loginController.text, Constants.PASSWORD_PARAMETER: _passwordController.text};
-      var resp = await session.login(Constants.HOST_URL + Constants.LOGIN_URL, body);
-      if(resp == 200) {
-        Scaffold.of(context).showSnackBar(SnackBar(
-            content:
-            Text("Zalogowany!")));
+      Scaffold.of(context)
+          .showSnackBar(SnackBar(duration: const Duration(seconds: 2), content: Text(Constants.LOGGING_STATEMENT)));
+      var body = {
+        Constants.LOGIN_PARAMETER: _loginController.text,
+        Constants.PASSWORD_PARAMETER: _passwordController.text
+      };
+      var resp =
+          await session.login(Constants.HOST_URL + Constants.LOGIN_URL, body);
+      if (resp == 200) {
+        Scaffold.of(context)
+            .showSnackBar( SnackBar(duration: const Duration(seconds: 2), content: Text("Zalogowany!")));
+        Future.delayed(const Duration(seconds: 3), () {
+          setState(() {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => HomeScreen()),
+            );
+          });
+        });
       } else {
-        Scaffold.of(context).showSnackBar(SnackBar(
-            content:
-            Text('Blad logowania!')));
+        Scaffold.of(context)
+            .showSnackBar(SnackBar(content: Text('Blad logowania!')));
       }
     }
   }
