@@ -2,7 +2,8 @@ import 'dart:ui' as prefix0;
 
 import 'package:flutter/material.dart';
 import 'package:i_kidi/Constats.dart';
-import 'package:i_kidi/Session.dart';
+import 'package:i_kidi/login_home.dart';
+import 'package:i_kidi/server_connection.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -17,8 +18,8 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     double screenHeight = MediaQuery.of(context).size.height;
     double screenWidth = MediaQuery.of(context).size.width;
-    return Scaffold(
-        drawer: Drawer(
+    return new Scaffold(
+        drawer: Builder( builder: (context) => Drawer(
           child: ListView(
             // Important: Remove any padding from the ListView.
             padding: EdgeInsets.zero,
@@ -41,17 +42,30 @@ class _HomeScreenState extends State<HomeScreen> {
                           20, (screenHeight / 5 - 80.0), 0, 0))),
               ListTile(
                 title: Text('Wyloguj'),
-                onTap: () {
-                  // Update the state of the app
-                  // ...
-                  // Then close the drawer
-                  Navigator.pop(context);
+                onTap: () async {
+                  ServerConnection session = new ServerConnection();
+                  var resp = await session.logout(
+                      Constants.HOST_URL + Constants.LOGOUT_URL, "");
+                  if (resp.compareTo("Successful logout") == 0) {
+                    Scaffold.of(context).showSnackBar(SnackBar(
+                        duration: const Duration(seconds: 2),
+                        content: Text("Wylogowano")));
+                    Future.delayed(const Duration(seconds: 3), () {
+                      setState(() {
+                        Navigator.pushReplacement(
+                          context,
+                          new MaterialPageRoute(
+                              builder: (context) => LoginForm()),
+                        );
+                      });
+                    });
+                  }
                 },
               ),
             ],
           ),
-        ),
-        body: SingleChildScrollView(
+        )),
+        body: Builder(builder: (context) => SingleChildScrollView(
             padding: const EdgeInsets.fromLTRB(
                 Constants.SIDE_PADDING,
                 Constants.TOP_PADDING,
@@ -64,7 +78,14 @@ class _HomeScreenState extends State<HomeScreen> {
                     children: <Widget>[
                       Image.asset('image/ikidiLogo.png',
                           width: 184, height: 45, fit: BoxFit.cover),
-                      _spaceUnderLogo
-                    ]))));
+                      _spaceUnderLogo,
+                      RaisedButton(
+
+                        onPressed: () {
+                          Scaffold.of(context).showSnackBar(SnackBar(content: Text("Test")));
+                        },
+                      )
+
+                    ])))));
   }
 }

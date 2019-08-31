@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:i_kidi/Constats.dart';
-import 'package:i_kidi/Session.dart';
+import 'package:i_kidi/server_connection.dart';
 import 'package:i_kidi/home.dart';
 
 class LoginForm extends StatefulWidget {
@@ -21,99 +21,105 @@ class _LoginFormState extends State<LoginForm> {
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
     double screenHeight = MediaQuery.of(context).size.height;
-    return SingleChildScrollView(
-        padding: const EdgeInsets.fromLTRB(
-            Constants.SIDE_PADDING,
-            Constants.TOP_PADDING,
-            Constants.SIDE_PADDING,
-            Constants.BOTTOM_PADDING),
-        child: Container(
-            height: screenHeight - 110.0,
-            child: Form(
-                key: _loginButton,
-                child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Image.asset('image/ikidiLogo.png',
-                          width: 184, height: 45, fit: BoxFit.cover),
-                      _spaceUnderLogo,
-                      TextFormField(
-                          controller: _loginController,
-                          validator: (value) {
-                            if (value.isEmpty) {
-                              return Constants.LOGIN_ERROR_STATEMENT;
-                            }
-                          },
-                          decoration: InputDecoration(
-                              hintText: Constants.LOGIN_FIELD_HINT,
-                              border: new OutlineInputBorder(
-                                  borderRadius: const BorderRadius.all(
-                                const Radius.circular(10.0),
-                              )))),
-                      _space,
-                      TextFormField(
-                          controller: _passwordController,
-                          obscureText: true,
-                          validator: (value) {
-                            if (value.isEmpty) {
-                              return Constants.PASSWORD_ERROR_STATEMENT;
-                            }
-                          },
-                          decoration: InputDecoration(
-                              hintText: Constants.PASSWORD_FIELD_HINT,
-                              border: new OutlineInputBorder(
-                                  borderRadius: const BorderRadius.all(
-                                const Radius.circular(10.0),
-                              )))),
-                      _space,
-                      ButtonTheme(
-                          minWidth: screenWidth,
-                          child: RaisedButton(
-                              color: Colors.blueGrey,
-                              shape: new RoundedRectangleBorder(
-                                  borderRadius:
-                                      new BorderRadius.circular(30.0)),
-                              // textColor: Colors.white,
-                              child: Text(Constants.LOGIN_BUTTON_TEXT,
-                                  style: TextStyle(
-                                      fontSize: 32.0,
-                                      fontWeight: FontWeight.bold,
-                                      fontStyle: FontStyle.italic,
-                                      textBaseline: TextBaseline.alphabetic)),
-                              onPressed: () {
-                                connect(context);
-                              }))
-                    ]))));
+    return new Scaffold(
+
+        body: Builder (builder: (context) => SingleChildScrollView(
+            padding: const EdgeInsets.fromLTRB(
+                Constants.SIDE_PADDING,
+                Constants.TOP_PADDING,
+                Constants.SIDE_PADDING,
+                Constants.BOTTOM_PADDING),
+            child: Container(
+                height: screenHeight - 110.0,
+                child: Form(
+                    key: _loginButton,
+                    child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          Image.asset('image/ikidiLogo.png',
+                              width: 184, height: 45, fit: BoxFit.cover),
+                          _spaceUnderLogo,
+                          TextFormField(
+                              controller: _loginController,
+                              validator: (value) {
+                                if (value.isEmpty) {
+                                  return Constants.LOGIN_ERROR_STATEMENT;
+                                }
+                              },
+                              decoration: InputDecoration(
+                                  hintText: Constants.LOGIN_FIELD_HINT,
+                                  border: new OutlineInputBorder(
+                                      borderRadius: const BorderRadius.all(
+                                    const Radius.circular(10.0),
+                                  )))),
+                          _space,
+                          TextFormField(
+                              controller: _passwordController,
+                              obscureText: true,
+                              validator: (value) {
+                                if (value.isEmpty) {
+                                  return Constants.PASSWORD_ERROR_STATEMENT;
+                                }
+                              },
+                              decoration: InputDecoration(
+                                  hintText: Constants.PASSWORD_FIELD_HINT,
+                                  border: new OutlineInputBorder(
+                                      borderRadius: const BorderRadius.all(
+                                    const Radius.circular(10.0),
+                                  )))),
+                          _space,
+                          ButtonTheme(
+                              minWidth: screenWidth,
+                              child: RaisedButton(
+                                  color: Colors.blueGrey,
+                                  shape: new RoundedRectangleBorder(
+                                      borderRadius:
+                                          new BorderRadius.circular(30.0)),
+                                  // textColor: Colors.white,
+                                  child: Text(Constants.LOGIN_BUTTON_TEXT,
+                                      style: TextStyle(
+                                          fontSize: 32.0,
+                                          fontWeight: FontWeight.bold,
+                                          fontStyle: FontStyle.italic,
+                                          textBaseline:
+                                              TextBaseline.alphabetic)),
+                                  onPressed: () {
+                                    connect(context);
+                                  }))
+                        ]))))));
   }
 
   void connect(BuildContext context) async {
-    Session session = new Session();
+    ServerConnection session = new ServerConnection();
     session.headers[Constants.LOGIN_PARAMETER] = _loginController.text;
     session.headers[Constants.PASSWORD_PARAMETER] = _passwordController.text;
     FocusScope.of(context).requestFocus(new FocusNode());
     if (_loginButton.currentState.validate()) {
-      Scaffold.of(context)
-          .showSnackBar(SnackBar(duration: const Duration(seconds: 2), content: Text(Constants.LOGGING_STATEMENT)));
+      Scaffold.of(context).showSnackBar(SnackBar(
+          duration: const Duration(seconds: 2),
+          content: Text(Constants.LOGGING_STATEMENT)));
       var body = {
         Constants.LOGIN_PARAMETER: _loginController.text,
         Constants.PASSWORD_PARAMETER: _passwordController.text
       };
-      var resp =
+      String resp = "";
+      resp =
           await session.login(Constants.HOST_URL + Constants.LOGIN_URL, body);
-      if (resp == 200) {
-        Scaffold.of(context)
-            .showSnackBar( SnackBar(duration: const Duration(seconds: 2), content: Text("Zalogowany!")));
+      if (resp.compareTo("Successful") == 0) {
+
+        Scaffold.of(context).showSnackBar(SnackBar(
+            duration: const Duration(seconds: 2), content: Text("Zalogowano")));
         Future.delayed(const Duration(seconds: 3), () {
           setState(() {
             Navigator.pushReplacement(
               context,
-              MaterialPageRoute(builder: (context) => HomeScreen()),
+              new MaterialPageRoute(builder: (context) => HomeScreen()),
             );
           });
         });
-      } else {
-        Scaffold.of(context)
-            .showSnackBar(SnackBar(content: Text('Blad logowania!')));
+      } else if (resp.compareTo("Invalid login attempt") == 0) {
+        Scaffold.of(context).showSnackBar(
+            SnackBar(content: Text('Błąd!\nNiepoprawny email lub hasło')));
       }
     }
   }

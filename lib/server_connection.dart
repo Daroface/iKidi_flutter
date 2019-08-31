@@ -1,7 +1,7 @@
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
-class Session {
+class ServerConnection {
   Map<String, String> headers = {};
 
   Future<Map> get(String url) async {
@@ -10,12 +10,19 @@ class Session {
     return json.decode(response.body);
   }
 
-  Future<int> login(String url, var body) async {
+  Future<String> login(String url, var body) async {
     var bodyEncoded = json.encode(body);
     headers["Content-type"] = "application/json";
     http.Response response = await http.post(url, headers: headers, body: bodyEncoded);
     updateCookie(response);
-    return response.statusCode;
+    return response.body;
+  }
+
+  Future<String> logout(String url, var body) async {
+    var bodyEncoded = json.encode(body);
+    http.Response response = await http.post(url, headers: headers, body: bodyEncoded);
+    updateCookie(response);
+    return response.body;
   }
 
   Future<Map> post(String url, var body) async {
