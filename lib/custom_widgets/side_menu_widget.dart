@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:i_kidi/server_connection.dart';
 import 'package:i_kidi/login_home.dart';
 
-class SideMenu extends StatelessWidget {
-  SideMenu({this.username, this.session, this.screenHeight});
+class SideMenuWidget extends StatelessWidget {
+  SideMenuWidget({this.username, this.session, this.screenHeight});
 
   final String username;
   final ServerConnection session;
