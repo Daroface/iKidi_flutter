@@ -116,7 +116,7 @@ class HomeScreenState extends State<HomeScreen> {
       Container container = new Container(child: column, width: screenWidth);
 
       InkWell iW = new InkWell(child: container, onTap: () {
-        openClubScreen(wallData[i]['ProductId'].toString());});
+        openClubScreen(wallData[i]['ProductId'].toString(), wallData[i]['Title']);});
 
       mainList.add(iW);
       mainList.add(Constants.spaceUnderElement);
@@ -128,10 +128,10 @@ class HomeScreenState extends State<HomeScreen> {
     return mainContainer;
   }
 
-  void openClubScreen(String id) {
+  void openClubScreen(String clubId, String clubName) {
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => ClubScreen(session: session, id: id, username: username)),
+      MaterialPageRoute(builder: (context) => ClubScreen(session: session, id: clubId, username: username, clubName: clubName)),
     );
   }
 
