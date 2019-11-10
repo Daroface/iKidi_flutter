@@ -15,8 +15,10 @@ class Constants {
   static const double SPACE_UNDER_WALL_ITEM_PADDING = 40.0;
   static const double SPACE_PADDING = 15.0;
 
+
   //hostname
-  static const String HOST_URL = "http://10.0.2.2:2464/";
+  //static const String HOST_URL = "http://10.0.2.2:2464/";
+  static const String HOST_URL = "https://ikidiportal.azurewebsites.net/";
 
   //endpoints
   static const String LOGIN_URL = "Api/Login";
